@@ -61,7 +61,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:10px;bord
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
-<div class="topnote"><span>資料來源：庫存、工單、廠商年度統計表｜統計基準日 2026/10/02</span><span>採購管理 · Buyer Lyn</span></div>
+<div class="topnote"><span>資料來源：庫存0902、庫存1002、工單1002、115年廠商年度統計表｜統計基準日 2026/10/02</span><span>採購管理 · Buyer Lyn</span></div>
 <div class="appbar"><div class="brand"><div class="logo">▥</div><span>採購管理 <small>供應鏈管理分析</small></span></div><div style="color:#8c99ad;font-size:13px">廠商 · 庫存 · 工單 · 風險</div></div>
 
 <main class="wrap">
@@ -447,7 +447,7 @@ $('clearBtn').addEventListener('click',()=>{$('q').value='';$('vendorFilter').va
 $('printBtn').addEventListener('click',()=>window.print());
 $('exportBtn').addEventListener('click',()=>{
   const d=filteredItems();
-  const cols=['貨品編號','貨品名稱','廠商編號','庫存','增減量','增減率','庫存金額','最後做貨日期','最後工單','近一年工單耗用','估算週轉天數','最近到期日','效期剩餘天數','效期批號','效期狀態','風險'];
+  const cols=['貨品編號','貨品名稱','廠商編號','0902庫存','1002庫存','增減量','增減率','1002庫存金額','最後做貨日期','最後工單','近一年工單耗用','估算週轉天數','最近到期日','效期剩餘天數','效期批號','效期狀態','風險'];
   const rows=[cols,...d.map(x=>cols.map(c=>c==='風險'?(x.風險||[]).join('|'):(x[c]??'')))];
   const csv='\ufeff'+rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='Lyn_採購庫存風險清單.csv';a.click();URL.revokeObjectURL(a.href);
