@@ -447,7 +447,7 @@ $('clearBtn').addEventListener('click',()=>{$('q').value='';$('vendorFilter').va
 $('printBtn').addEventListener('click',()=>window.print());
 $('exportBtn').addEventListener('click',()=>{
   const d=filteredItems();
-  const cols=['貨品編號','貨品名稱','廠商編號','0902庫存','1002庫存','增減量','增減率','1002庫存金額','最後做貨日期','最後工單','近一年工單耗用','估算週轉天數','最近到期日','效期剩餘天數','效期批號','效期狀態','風險'];
+  const cols=['貨品編號','貨品名稱','廠商編號','庫存','增減量','增減率','庫存金額','最後做貨日期','最後工單','近一年工單耗用','估算週轉天數','最近到期日','效期剩餘天數','效期批號','效期狀態','風險'];
   const rows=[cols,...d.map(x=>cols.map(c=>c==='風險'?(x.風險||[]).join('|'):(x[c]??'')))];
   const csv='\ufeff'+rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='Lyn_採購庫存風險清單.csv';a.click();URL.revokeObjectURL(a.href);
