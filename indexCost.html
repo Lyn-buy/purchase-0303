@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工單單包漲價幅度計算器</title>
+<style>
+:root{--ink:#263445;--muted:#718096;--line:#e5eaf0;--accent:#286c68;--soft:#edf6f4;--bg:#f5f7f8;--gold:#b7791f}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,"Noto Sans TC",sans-serif;color:var(--ink);padding:28px 16px}
+.wrap{max-width:920px;margin:auto}.top{margin-bottom:22px}.eyebrow{font-size:12px;letter-spacing:1.5px;color:var(--accent);font-weight:700}.top h1{font-size:27px;margin:8px 0}.top p{color:var(--muted);margin:0;line-height:1.7}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:18px;box-shadow:0 5px 20px #23304408}
+h2{font-size:17px;margin:0 0 18px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+label{display:block;font-size:13px;font-weight:700;margin-bottom:8px}.hint{font-weight:400;color:var(--muted);font-size:12px}
+.inputbox{display:flex;align-items:center;border:1px solid #d8e0e7;border-radius:10px;overflow:hidden;background:#fff}
+input{width:100%;border:0;outline:0;padding:13px 12px;font-size:17px;color:var(--ink);min-width:0}
+.unit{padding:0 13px;color:var(--muted);font-size:13px;white-space:nowrap;background:#f8fafb;height:46px;display:flex;align-items:center;border-left:1px solid var(--line)}
+.actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}button{border:0;border-radius:9px;padding:11px 18px;font-size:14px;font-weight:700;cursor:pointer}.reset{background:#edf1f4;color:#465566}.sample{background:var(--soft);color:var(--accent)}
+.results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.metric{background:#f8fafb;border:1px solid var(--line);border-radius:12px;padding:16px}.metric.primary{background:var(--soft);border-color:#cfe3df}
+.metric .name{font-size:12px;color:var(--muted);margin-bottom:8px}.metric .value{font-size:24px;font-weight:800;letter-spacing:-.5px;overflow-wrap:anywhere}.metric.primary .value{color:var(--accent);font-size:29px;font-weight:900}.metric .unitnote{font-size:11px;color:var(--muted);margin-top:5px}.increase{color:#c62828!important}.decrease{color:#2166c2!important}.neutral{color:var(--accent)!important}
+.steps{display:grid;gap:12px}.step{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px dashed var(--line);align-items:flex-start}.step:last-child{border:0}.step .desc{font-size:13px;color:var(--muted);line-height:1.6}.step strong{font-size:15px;text-align:right;white-space:nowrap}
+.formula{background:#fbfcfd;border:1px dashed #cbd5df;border-radius:10px;padding:14px;font-size:13px;line-height:1.9;color:#526173;overflow-wrap:anywhere}
+.note{font-size:12px;color:var(--muted);line-height:1.7;margin-top:14px}
+@media(max-width:650px){body{padding:20px 12px}.panel{padding:18px}.grid{grid-template-columns:1fr}.results{grid-template-columns:1fr}.metric.primary .value{font-size:27px}.top h1{font-size:23px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">PROCUREMENT · COST ANALYSIS</div>
+    <h1>工單單包漲價幅度計算器</h1>
+    <p>輸入工單原料需求量、混料量、原料漲價差額及每包克數，即時計算每包增加成本。</p>
+  </header>
+
+  <section class="panel">
+    <h2>① 輸入工單與原料資料</h2>
+    <div class="grid">
+      <div><label for="demand">原料需求量 <span class="hint">（整張工單使用量）</span></label><div class="inputbox"><input id="demand" type="number" min="0" step="any" value="240"><span class="unit">g</span></div></div>
+      <div><label for="mix">混料量 <span class="hint">（整張工單總量）</span></label><div class="inputbox"><input id="mix" type="number" min="0" step="any" value="120"><span class="unit">kg</span></div></div>
+      <div><label for="diff">原料漲價差額 <span class="hint">（新單價 − 舊單價）</span></label><div class="inputbox"><input id="diff" type="number" step="any" value="1.2"><span class="unit">$/g</span></div></div>
+      <div><label for="bag">每包成品重量</label><div class="inputbox"><input id="bag" type="number" min="0" step="any" value="2"><span class="unit">g／包</span></div></div>
+    </div>
+    <div class="actions"><button class="sample" id="sample">帶入範例數字</button><button class="reset" id="reset">清空／重設</button></div>
+    <p class="note">計算基準：1 公斤 = 1,000g。漲價差額以每克單價差計算；若原料報價單位不同，請先換算成 $/g。</p>
+  </section>
+
+  <section class="panel">
+    <h2>② 計算結果</h2>
+    <div class="results">
+      <div class="metric primary"><div class="name">每包增加成本</div><div class="value" id="perBag">$0.0048</div><div class="unitnote">每包成品增加金額</div></div>
+      <div class="metric"><div class="name">每公斤混料增加成本</div><div class="value" id="perKg">$2.4000</div><div class="unitnote">以 1kg 混料計算</div></div>
+      <div class="metric"><div class="name">整張工單預估增加成本</div><div class="value" id="total">$288.00</div><div class="unitnote">依輸入混料總量估算</div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>③ 計算過程</h2>
+    <div class="steps">
+      <div class="step"><div class="desc">每公斤混料原料用量<br>原料需求量 ÷ 混料量</div><strong id="ratio">240 ÷ 120 = 2 g</strong></div>
+      <div class="step"><div class="desc">每公斤混料增加成本<br>每公斤原料用量 × 原料漲價差額</div><strong id="kgformula">2 × $1.2 = $2.4</strong></div>
+      <div class="step"><div class="desc">每公斤可生產包數<br>1,000g ÷ 每包重量</div><strong id="bagsformula">1,000 ÷ 2 = 500 包</strong></div>
+      <div class="step"><div class="desc">每包增加成本<br>每公斤混料增加成本 ÷ 每公斤可生產包數</div><strong id="bagformula">$2.4 ÷ 500 = $0.0048</strong></div>
+      <div class="step"><div class="desc">整張工單預估增加成本<br>每公斤混料增加成本 × 混料量</div><strong id="totalformula">$2.4 × 120 = $288</strong></div>
+    </div>
+    <div class="formula" id="summary">結論：本次原料漲價後，每包成品成本增加 $0.0048。</div>
+    <p class="note">提醒：此工具假設整張工單的混料均勻、每包重量固定，且混料量以公斤輸入。未計入製程耗損、良率差異及其他加工費用。</p>
+  </section>
+</div>
+<script>
+const ids=['demand','mix','diff','bag'];const el=id=>document.getElementById(id);
+const num=id=>Number(el(id).value);
+const fmt=(v,d=4)=>Number.isFinite(v)?v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}):'—';
+const money=(v,d=4)=>'$'+fmt(v,d);
+function calculate(){
+ const demand=num('demand'),mix=num('mix'),diff=num('diff'),bag=num('bag');
+ const valid=ids.every(id=>el(id).value.trim()!=='' ) && demand>=0 && mix>0 && bag>0 && Number.isFinite(diff);
+ if(!valid){['perBag','perKg','total'].forEach(id=>el(id).textContent='—');el('perBag').classList.remove('increase','decrease','neutral');el('summary').textContent='請確認輸入數值：混料量與每包重量必須大於 0。';return;}
+ const ratio=demand/mix,perKg=ratio*diff,bags=1000/bag,perBag=perKg/bags,total=perKg*mix;
+ el('perBag').textContent=money(perBag,Math.max(4,Math.min(8,Math.ceil(Math.abs(perBag).toString().split('.')[1]?.length||0))));el('perBag').classList.remove('increase','decrease','neutral');el('perBag').classList.add(perBag>0?'increase':(perBag<0?'decrease':'neutral'));
+ el('perKg').textContent=money(perKg,4);el('total').textContent=money(total,2);
+ el('ratio').textContent=`${fmt(demand,2)} ÷ ${fmt(mix,2)} = ${fmt(ratio,4)} g`;
+ el('kgformula').textContent=`${fmt(ratio,4)} × ${money(diff,4)} = ${money(perKg,4)}`;
+ el('bagsformula').textContent=`1,000 ÷ ${fmt(bag,3)} = ${fmt(bags,2)} 包`;
+ el('bagformula').textContent=`${money(perKg,4)} ÷ ${fmt(bags,2)} = ${money(perBag,6)}`;
+ el('totalformula').textContent=`${money(perKg,4)} × ${fmt(mix,2)} = ${money(total,2)}`;
+ el('summary').textContent=`結論：本次原料漲價後，每包成品成本增加 ${money(perBag,6)}；整張工單預估增加 ${money(total,2)}。`;
+}
+ids.forEach(id=>el(id).addEventListener('input',calculate));
+el('sample').addEventListener('click',()=>{['240','120','1.2','2'].forEach((v,i)=>el(ids[i]).value=v);calculate();});
+el('reset').addEventListener('click',()=>{['','','',''].forEach((v,i)=>el(ids[i]).value=v);calculate();});
+calculate();
+</script>
+</body>
+</html>
